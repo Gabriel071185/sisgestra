@@ -1,0 +1,74 @@
+{% extends "template_base.html" %}
+{%block title %} Registro de usuarios {%  endblock %}
+
+{%block body %}  
+
+
+    <div class="container  p-5">
+        <div class="row">
+            <div class=" col-12 col-md-6 offset-md-3">
+                <div class="card" id="estilo" >
+                    <div class="card-body">
+                        <h5 class="text-center">Registro de usuario</h5>
+                        <hr>
+                        {% if form.errors %}    
+                        <ul class="error_list my-0 text-dark">
+                            {% for error in form.non_field_errors %}
+                            <li> {{error|escape}} </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        
+                    
+                            <form action="" method="POST" name="form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {% for field in form %}
+                               <div class="form-group">
+                                <label for="{{field.id_for_label}}" class="col-form-label">{{field.label}}:</label>
+                                <div>                                
+                                    {{ field }}
+                                </div>
+                                <p> 
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                </p>
+                            </div>
+                                {% if field.errors %}
+                                {% for error in field.errors %}
+                                <div class="form-text text-danger">
+                                    {{error|escape}}
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                    
+                                {% endfor %}
+                            <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary  justify-content-center border-2 border-dark">Registrarse</button>
+                        </div>
+                        </form>
+                        <a class="link" href="{% url 'movimientos:panel_inicio' %}">Ir al  panel de inicio</a> | 
+                        <a class="link" href="{% url 'login' %}">Iniciar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if messages %}
+    {% for message in messages %}
+      <div >
+        <script>
+            Swal.fire({
+                
+                icon: 'success',
+                title: 'Felicitaciones',
+                text: '{{message}}',
+                showConfirmButton: true,
+              })
+        </script>
+        
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+{% endblock%}

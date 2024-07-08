@@ -1,0 +1,57 @@
+{% extends "template_base.html" %}
+{%block title %} Panel Inicio Movimientos{%  endblock %}
+
+
+{%block body %} 
+
+<div class="container mt-5 mb-5"  > 
+
+     <table class="table table-bordered  table-hover shadow-lg"  > 
+        <thead > 
+          <tr class="text-center">
+            <th scope="col">Id</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Transporte</th>
+            <th scope="col">Descripción de Carga</th>
+            <th scope="col"  >
+              <form>
+                <input type="hidden" name="filtro" value="ubicacion">
+                <button type="submit" class=" d-flex align-items-center gap-2 bg-primary text-light rounded-2 ">Ubicación <svg  xmlns="http://www.w3.org/2000/svg"  width="15"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-filter"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg></button>
+              </form>
+
+            </th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Acciones</th>
+            
+          </tr>
+        </thead> 
+         <tbody  >
+          {% for movimiento in movimientos %}
+            <tr>
+              <th scope="row">{{ forloop.counter }}</th> 
+              <td>{{ movimiento.usuario }}</td>
+              <td>{{ movimiento.transporte }}</td>
+              <td style="min-width:650px;" >{{ movimiento.descripcion_carga|safe }}</td>
+              <td>{{ movimiento.ubicacion_final }}</td>
+              <td>{{ movimiento.tiempo }}</td>
+              <td><div class="d-flex justify-content-center"><a href="{% url 'movimientos:panel_reportes' movimiento.id %}" role="button" class="btn btn-primary border-2 border-dark align-items-center ">Ver</a></div></td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="text-center">No hay movimientos.</td> 
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table> 
+    
+      <form method="POST">
+        {% csrf_token %}
+        <button type="submit" value="Enviar registro" class="btn btn-primary   border-2 border-dark">Enviar reporte de movimientos/ubicación y operadores vía email</button>
+      </form>
+    </div> 
+
+
+    
+      
+
+{% endblock%}

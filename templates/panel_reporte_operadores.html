@@ -1,0 +1,38 @@
+{% extends "template_base.html" %}
+{% load static %}
+
+{%block title %} Reporte de personal {%  endblock %}
+
+{%block body %}  
+<img src={% static 'img/logo.png' %} alt="imagen de prueba">
+<div class="container mt-5">
+    <table class="table table-bordered  table-hover shadow-lg">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nombre del Puesto</th>
+                <th scope="col">Operador</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Acciones</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for puesto in puestos %}
+            <tr>
+                <td>{{puesto.nombre_puesto}}</td>
+                <td>{{puesto.operador}}</td>
+                <td>{{puesto.get_rol_display}}</td>
+                <td>
+                     <a href="{% url 'movimientos:puesto_operadores_editar' puesto.id %}" class="btn btn-warning">Editar</a> 
+                     <a href="{% url 'movimientos:puesto_operadores_eliminar' puesto.id %}" class="btn btn-danger">Eliminar</a> 
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+   
+  
+{% endblock%}

@@ -1,0 +1,32 @@
+{% extends "template_base.html" %}
+
+{%block title %} Reporte Individual de Movimientos {%  endblock %}
+
+{%block body %} 
+
+
+
+
+<div class="card text mb-3 mt-3 mx-auto p-2 shadow-lg" id="estilo"  style="width:700px; min-height: 85vh !important; ">
+    <div class="card-header text-center text-light fs-5" id="header" >ID del Movimiento: {{ movimiento.id }}</div>
+    <div class="card-body">
+      <h5 class="card-title">Transporte: {{ movimiento.transporte }}</h5>
+      <p class="card-text">Carga:</p>
+      <p class="card-text">{{ movimiento.descripcion_carga|safe }}</p>
+      
+      
+       <div class="card-body  border rounded-1">
+        <p class="card-text">Usuario: {{ movimiento.usuario }}</p>
+        <p class="card-text" >Ubicación: {{ movimiento.ubicacion_final }}</p>
+        <p class="card-text" >Dia/Hora: {{ movimiento.tiempo }}</p>
+       </div>
+    </div>
+    <div class="card-footer  text-center" id ="footer">
+        <a href=" {% url 'movimientos:editar_movimiento' movimiento.id%} " class="btn btn-warning  border-2 border-dark ">Modificar</a>
+        <a href=" {% url 'movimientos:eliminar_movimiento' movimiento.id%} " class="btn btn-danger  border-2 border-dark ">Eliminar</a>
+        <a href=" {% url 'movimientos:descargar_movimiento' movimiento.id%} " class="btn btn-success  border-2 border-dark ">Descargar/Enviar a "Playa"</a>
+    </div>
+
+  </div>
+
+{% endblock%}

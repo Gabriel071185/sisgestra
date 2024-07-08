@@ -1,0 +1,49 @@
+{% extends "template_base.html" %}
+
+{%block title %} Ingreso al sistema {%  endblock %}
+
+{%block body %}     
+
+
+    <div class="container p-5" style="min-height: 85vh !important;" >
+        <div class="row">
+            <div class=" col-12 col-md-6 offset-md-3">
+                <div class="card" id="estilo">
+                    <div class="card-body">
+                        <h5 class="text-center">Ingreso al sistema</h5>
+                        <hr>
+                        <form method="POST"  >
+                            {% csrf_token %}
+                            {% for field in form %}
+                               <div class="form-group">
+                                <label for="{{field.id_for_label}}" class="col-form-label">{{field.label}}:</label>
+                                <div>                                
+                                    {{ field }}
+                                </div>
+                                <p> 
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                </p>
+                            </div>
+                                {% if field.errors %}
+                                {% for error in field.errors %}
+                                <div class="form-text text-danger">
+                                    {{error|escape}}
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                    
+                                {% endfor %}
+                            <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Ingresar</button>
+                            </div>
+                        </form>
+
+                        <a class="link" href="{% url 'movimientos:panel_inicio' %}">Ir al inicio</a> | 
+                        <a class="link" href="{% url 'movimientos:registrar' %}">Registrate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock%}
