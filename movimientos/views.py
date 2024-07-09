@@ -23,7 +23,8 @@ def index(request):
     
 
 def registro(request):
-    data = {'form': CustomUser()}
+    if request.user.is_authenticated: return redirect(reverse("movimientos:panel_inicio"))
+    data = {'form': CustomUser(), 'activo': 'registro'}
     if request.method == 'POST':
         data['form'] = CustomUser(request.POST)
         if data['form'].is_valid():
@@ -35,9 +36,9 @@ def registro(request):
             mensaje = render_to_string('email_generator.html', {'user': request.user , 'fecha': datetime.now()})
             email = EmailMessage(asunto, mensaje, to=[user.email])
             email.content_subtype = 'html'
-            # email.attach_file(f'{settings.BASE_DIR}/primer_bosquejo_modelos.png')
+            
             email.send()
-            return redirect(reverse('login'))
+            return redirect(reverse("movimientos:panel_inicio"))
 
     return render(request, 'registration/registro.html', data)
    
@@ -56,7 +57,14 @@ def panel_inicio(request):
         email.content_subtype = 'html'
         email.send()
         messages.success(request, 'El correo se ha enviado exitosamente')
-    return render(request, 'panel_inicio.html', {'movimientos': movimientos})
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect(reverse("movimientos:panel_inicio"))
+
+
+    return render(request, 'panel_inicio.html', {'movimientos': movimientos, 'activo': 'inicio',})
    
 @login_required   
 def panel_movimientos(request):
@@ -80,14 +88,14 @@ def panel_movimientos(request):
             messages.error(request, 'Hay errores en el formulario') 
     else:
         form = MovimientoForm()
-    return render(request, 'panel_movimientos.html', {'form': form})
+    return render(request, 'panel_movimientos.html', {'form': form, 'activo': 'carga_movimientos'} )
 
 
 
 @login_required
 def panel_reportes(request, id):
     movimiento = Movimiento.objects.get(pk=id)
-    return render(request, 'panel_reportes.html',{'movimiento': movimiento})
+    return render(request, 'panel_reportes.html',{'movimiento': movimiento, 'activo': 'panel_reporte'})
 
 @login_required
 def editar_movimiento(request, id):
@@ -158,13 +166,13 @@ def parte_operadores(request):
             instancia.save()
             messages.success(request, 'El operador/puesto se ha registrado exitosamente')
             return redirect(reverse('movimientos:panel_reporte_operadores'))
-    return render(request, 'panel_operadores.html', {'form': form, })
+    return render(request, 'panel_operadores.html', {'form': form, 'activo': 'carga_personal'})
 
 
-
+@login_required
 def panel_reportes_operadores(request):
     puestos = Puesto.objects.all()
-    return render(request, 'panel_reporte_operadores.html' , {'puestos': puestos})
+    return render(request, 'panel_reporte_operadores.html' , {'puestos': puestos, 'activo': 'reporte_personal'})
 
 
 def puesto_operadores_eliminar(request, id):
