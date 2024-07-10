@@ -62,8 +62,6 @@ def panel_inicio(request):
             return redirect(referer)
         else:
             return redirect(reverse("movimientos:panel_inicio"))
-
-
     return render(request, 'panel_inicio.html', {'movimientos': movimientos, 'activo': 'inicio',})
    
 @login_required   
@@ -76,11 +74,13 @@ def panel_movimientos(request):
             if movimiento.ubicacion_final is None:
                 ubicacion, created = Ubicacion.objects.get_or_create(codigo_porton = "Playa")
                 movimiento.ubicacion_final = ubicacion
+            ultimo = Movimiento.objects.filter(transporte = movimiento.transporte).first()
+            if ultimo is not None:
+                ultimo.delete()
             movimiento.save()
+            
             transporte = Transporte.objects.get(pk = movimiento.transporte.pk)
-
             transporte.cargado = bool(int(form.cleaned_data['cargado']))
-
             transporte.save()
             messages.success(request, 'Tu movimiento se realizo exitosamente')
             return redirect(reverse('movimientos:panel_inicio',)) 
@@ -110,7 +110,10 @@ def editar_movimiento(request, id):
     if request.method == 'POST':
         form = MovimientoForm(request.POST, instance=movimiento)
         if form.is_valid():
-            form.save()
+            movimiento = form.save()
+            transporte = Transporte.objects.get(pk = movimiento.transporte.pk)
+            transporte.cargado = bool(int(form.cleaned_data['cargado']))
+            transporte.save()
             messages.success(request, 'Tu movimiento se editó exitosamente')
             return redirect(reverse('movimientos:panel_inicio',))
     else:

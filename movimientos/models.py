@@ -33,12 +33,13 @@ class Movimiento(models.Model):
     tiempo = models.DateTimeField(auto_now=True)
 
     def save(self) -> None:
+        # transporte = Transporte.objects.get(pk = self.transporte.pk)
+        # transporte.ultima_ubicacion = self.ubicacion_final
+        # transporte.save()
         self.transporte.ultima_ubicacion = self.ubicacion_final
         self.transporte.save()
-        ultimo = Movimiento.objects.filter(transporte = self.transporte).first()
-        if ultimo is not None:
-            ultimo.delete()
-        return super().save()
+
+        return super().save()   
 
     def delete(self):
         if Movimiento.objects.filter(transporte = self.transporte).order_by('-tiempo').first().tiempo > self.tiempo:

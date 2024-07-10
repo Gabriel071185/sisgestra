@@ -55,11 +55,11 @@ class MovimientoForm(ModelForm):
     def clean(self):
         data = super().clean()
         cargado = int(data['cargado'])
-        ubicacion_final = data['ubicacion_final']
+        ubicacion_final = data.get('ubicacion_final')
         transporte = data['transporte']
-        print((ubicacion_final.codigo_porton != "En espera" and transporte.ultima_ubicacion.codigo_porton != "En espera"))
-        if transporte.cargado == bool(cargado) and (ubicacion_final.codigo_porton != "En espera" and transporte.ultima_ubicacion.codigo_porton != "En espera"):
-            self.add_error('cargado', f'El transporte ya se encuentra {"cargado" if cargado else "descargado"}')
+        if ubicacion_final is None:
+            return
+        
         if bool(cargado) and ubicacion_final.codigo_porton == "Playa" :
             self.add_error('ubicacion_final', 'No puede haber un semi cargado en playa')
 
@@ -67,7 +67,7 @@ class MovimientoForm(ModelForm):
     def clean_ubicacion_final(self):
         ubicacion = self.cleaned_data['ubicacion_final']
         if ubicacion is not None:
-            if Transporte.objects.filter(ultima_ubicacion = ubicacion).exclude(ultima_ubicacion__codigo_porton = "Playa").exists():
+            if Transporte.objects.filter(ultima_ubicacion__codigo_porton = ubicacion).exclude(ultima_ubicacion__codigo_porton = "Playa").exists():
                 raise ValidationError(f'Ubicación ocupada.')
         return ubicacion
 
@@ -95,31 +95,31 @@ class PuestoForm(ModelForm):
         operador = data.get('operador')
         datos_operador = data.get('datos_operador')
 
-        # Si lleno ambos - Mal
+        
         if operador and datos_operador:
-            raise ValidationError('Que no entendiste de que es uno o el otro')
-        # Si cargo uno nuevo
+            raise ValidationError('No puedes completar los dos campos, debes elegir uno')
+       
         if datos_operador:
-            # Si no tiene el formato deseado
+            
             if '-' not in datos_operador:
                 self.add_error('datos_operador', 'Respete el formato solicitado')
                 return
             registro = datos_operador.split('-')[0].strip()
-            # Comprobamos el numero de registro
+            
             if re.match(r'^\d{5}$', registro) is None:
                 raise ValidationError('Registro Invalido')
                 return
             nombre = datos_operador.split('-')[1].title()
             datos_operador = ' - '.join([registro, nombre])
-            # Creamos o devolvemos si ya existe
+            
             operador, created = Operador.objects.get_or_create(datos_operador = datos_operador)
 
-        # Si ya está asignado a un puesto
+        
         
         if Puesto.objects.filter(operador = operador).exists():
             raise ValidationError('El operador ya tiene un puesto asignado en este momento')
 
-        # Le dejamos la referencia al objeto
+        
         self.cleaned_data['operador'] = operador
 
         
